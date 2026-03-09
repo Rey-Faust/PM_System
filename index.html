@@ -1,0 +1,2177 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>侨水建设·项目管理控制系统</title>
+  <style>
+    :root {
+      --bg: #eef2f5;
+      --panel: #ffffff;
+      --ink: #1a2a33;
+      --muted: #62707a;
+      --line: #d7e0e6;
+      --brand: #0b4f6c;
+      --brand-soft: #d8ebf4;
+      --good: #2f855a;
+      --warn: #b7791f;
+      --bad: #c53030;
+      --shadow: 0 10px 24px rgba(9, 30, 66, 0.08);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans SC", "Source Han Sans SC", "PingFang SC", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 10%, #f7fafc 0%, transparent 26%),
+        radial-gradient(circle at 88% 4%, #deecf4 0%, transparent 28%),
+        linear-gradient(180deg, #f3f7fa 0%, var(--bg) 56%, #e8edf1 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+      animation: enter 520ms ease-out;
+    }
+
+    @keyframes enter {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 18px 22px;
+      background:
+        linear-gradient(115deg, rgba(11, 79, 108, 0.92) 0%, rgba(14, 100, 135, 0.92) 55%, rgba(24, 127, 146, 0.92) 100%),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.12) 0 2px, transparent 2px 6px);
+      color: #fff;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero h1::before {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 10px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, #8fd8ff 0%, #d8f1ff 100%);
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+      vertical-align: -2px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -40px;
+      width: 170px;
+      height: 170px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.24), transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: 0.3px;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      font-size: 14px;
+      color: #d4ecf7;
+      max-width: 900px;
+      line-height: 1.6;
+    }
+
+    .kpi-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 8px 0 10px;
+    }
+
+    .kpi-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #f8fbfd;
+      color: #3d5261;
+    }
+
+    .kpi-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      display: inline-grid;
+      place-items: center;
+      background: #ecf4fa;
+      border: 1px solid #d3e3ef;
+      color: #355165;
+    }
+
+    .kpi-icon svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .kpi:hover {
+      transform: translateY(-2px);
+    }
+
+    .kpi-chip .label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .kpi-chip .value {
+      font-size: 16px;
+      font-weight: 700;
+      font-family: "IBM Plex Sans", "Noto Sans SC", sans-serif;
+    }
+
+    .kpi-chip.good .value { color: var(--good); }
+    .kpi-chip.warn .value { color: var(--warn); }
+    .kpi-chip.bad .value { color: var(--bad); }
+
+    .row {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 2fr 1fr;
+      align-items: stretch;
+    }
+
+    .split-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+    }
+
+    .head {
+      padding: 14px 16px 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .head h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0.2px;
+    }
+
+    .head small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .section-body {
+      padding: 12px 16px 16px;
+    }
+
+    .goal-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .goal-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 9px 10px;
+      background: #f8fbfd;
+    }
+
+    .goal-item .meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .bar {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #e2e9ef;
+      overflow: hidden;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #0e6c91 0%, #2f855a 100%);
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .source-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #f8fbfd;
+    }
+
+    .source-status {
+      font-size: 12px;
+      color: #3f505f;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #c9d8e3;
+      background: #fff;
+    }
+
+    .source-status.active {
+      color: #18653e;
+      border-color: #b7e0c8;
+      background: #e8f7ef;
+    }
+
+    .source-status.error {
+      color: #9d1f1f;
+      border-color: #efb6b6;
+      background: #fde8e8;
+    }
+
+    .crud-form {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f9fcff;
+      padding: 10px;
+      margin-bottom: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .form-grid label {
+      display: grid;
+      gap: 4px;
+      font-size: 12px;
+      color: #445968;
+    }
+
+    .form-grid input,
+    .form-grid textarea {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      font: inherit;
+      background: #fff;
+      color: var(--ink);
+      resize: vertical;
+    }
+
+    .form-grid textarea {
+      min-height: 66px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(180deg, #ffffff 0%, #f3f6f8 100%);
+    }
+
+    .btn-danger {
+      border-color: #efb6b6;
+      color: #9d1f1f;
+      background: linear-gradient(180deg, #fff 0%, #fdeeee 100%);
+    }
+
+    .btn-small {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+
+    .action-cell {
+      white-space: nowrap;
+    }
+
+    .project-link {
+      border: 0;
+      background: transparent;
+      color: #0b4f6c;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      padding: 0;
+    }
+
+    .project-link:hover {
+      color: #11739a;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    select, button {
+      border-radius: 9px;
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      background: #fff;
+      font: inherit;
+      color: var(--ink);
+    }
+
+    button {
+      cursor: pointer;
+      background: linear-gradient(180deg, #ffffff 0%, #eef6fb 100%);
+      font-weight: 600;
+    }
+
+    button:hover {
+      border-color: #a9c0d0;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .icon-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: 880px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      padding: 10px 8px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f7fb;
+      color: #3b4d5b;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+
+    .status.green {
+      color: #18653e;
+      background: #e8f7ef;
+      border-color: #b7e0c8;
+    }
+
+    .status.yellow {
+      color: #8a5b12;
+      background: #fff5e1;
+      border-color: #f0cf8e;
+    }
+
+    .status.red {
+      color: #9d1f1f;
+      background: #fde8e8;
+      border-color: #efb6b6;
+    }
+
+    .modules {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .module {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      display: grid;
+    }
+
+    .module-head {
+      background: linear-gradient(180deg, #f6fbff 0%, #ebf4fa 100%);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .module-head h3 {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .module-head small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .module ul {
+      margin: 0;
+      padding: 12px 16px 14px;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      font-size: 13px;
+      color: #314351;
+    }
+
+    .module li {
+      padding-left: 9px;
+      border-left: 3px solid #bfd4e2;
+    }
+
+    .rhythm {
+      display: grid;
+      gap: 10px;
+    }
+
+    .rhythm-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #f8fbfd;
+    }
+
+    .rhythm-card h4 {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .rhythm-card p {
+      margin: 6px 0 0;
+      color: #425a69;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .decision-summary {
+      display: grid;
+      gap: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 3px 10px;
+      font-size: 12px;
+      color: #3f505f;
+      background: #fff;
+      margin-right: 6px;
+    }
+
+    .footer-note {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 0 2px;
+    }
+
+    @media (max-width: 1200px) {
+      .kpi-grid { gap: 8px; }
+
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      .split-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modules {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .shell {
+        padding: 12px;
+      }
+
+      .kpi-grid { gap: 6px; }
+
+      .hero h1 {
+        font-size: 20px;
+      }
+
+      .hero p {
+        font-size: 12px;
+      }
+
+      table {
+        min-width: 760px;
+      }
+
+      .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="panel hero">
+      <h1>侨水建设·项目管理控制系统</h1>
+    </section>
+
+    <section class="panel">
+      <div class="section-body">
+        <div class="source-bar">
+          <span id="sourceStatus" class="source-status">数据源：本地演示</span>
+          <button id="loadCloudBtn" class="icon-btn" type="button" title="从 Supabase 拉取" aria-label="从 Supabase 拉取">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v10"/><path d="m8 10 4 4 4-4"/><path d="M4 19h16"/></svg>
+          </button>
+          <button id="seedCloudBtn" class="icon-btn" type="button" title="初始化示例数据到 Supabase" aria-label="初始化示例数据到 Supabase">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20V10"/><path d="m8 14 4-4 4 4"/><path d="M4 5h16"/></svg>
+          </button>
+        </div>
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <div class="filters">
+          <select id="statusFilter">
+            <option value="all">全部状态</option>
+            <option value="red">仅红色</option>
+            <option value="yellow">仅黄色</option>
+            <option value="green">仅绿色</option>
+          </select>
+          <select id="redlineFilter">
+            <option value="all">全部红线</option>
+            <option value="工期">工期红线</option>
+            <option value="利润">利润红线</option>
+            <option value="回款">回款红线</option>
+          </select>
+          <button id="resetBtn" type="button">重置筛选</button>
+          <button id="addMasterBtn" class="icon-btn" type="button" title="新增子项目" aria-label="新增子项目">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>子项目</th>
+                <th>范围状态</th>
+                <th>进度状态</th>
+                <th>成本状态</th>
+                <th>采购状态</th>
+                <th>资源状态</th>
+                <th>风险状态</th>
+                <th>回款状态</th>
+                <th>当前红线</th>
+                <th>负责人</th>
+                <th>财务</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="masterTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="projectWorkbench" class="panel hidden">
+      <div class="head">
+        <h2 id="workbenchTitle">子项目管理</h2>
+        <button id="closeWorkbenchBtn" type="button" class="btn-secondary">关闭</button>
+      </div>
+      <div class="section-body">
+        <form id="workbenchForm" class="crud-form">
+          <div class="form-grid">
+            <label>子项目
+              <input id="workbenchNameInput" readonly />
+            </label>
+            <label>负责人
+              <input id="workbenchOwnerInput" required />
+            </label>
+            <label>范围状态
+              <select id="workbenchScopeInput">
+                <option value="green">绿</option>
+                <option value="yellow">黄</option>
+                <option value="red">红</option>
+              </select>
+            </label>
+            <label>进度状态
+              <select id="workbenchScheduleInput">
+                <option value="green">绿</option>
+                <option value="yellow">黄</option>
+                <option value="red">红</option>
+              </select>
+            </label>
+            <label>成本状态
+              <select id="workbenchCostInput">
+                <option value="green">绿</option>
+                <option value="yellow">黄</option>
+                <option value="red">红</option>
+              </select>
+            </label>
+            <label>采购状态
+              <select id="workbenchProcurementInput">
+                <option value="green">绿</option>
+                <option value="yellow">黄</option>
+                <option value="red">红</option>
+              </select>
+            </label>
+            <label>资源状态
+              <select id="workbenchResourceInput">
+                <option value="green">绿</option>
+                <option value="yellow">黄</option>
+                <option value="red">红</option>
+              </select>
+            </label>
+            <label>风险状态
+              <select id="workbenchRiskInput">
+                <option value="green">绿</option>
+                <option value="yellow">黄</option>
+                <option value="red">红</option>
+              </select>
+            </label>
+            <label>回款状态
+              <select id="workbenchCollectionInput">
+                <option value="green">绿</option>
+                <option value="yellow">黄</option>
+                <option value="red">红</option>
+              </select>
+            </label>
+            <label>当前红线
+              <select id="workbenchRedlineInput">
+                <option value="无">无</option>
+                <option value="工期">工期</option>
+                <option value="利润">利润</option>
+                <option value="回款">回款</option>
+                <option value="工期 / 利润">工期 / 利润</option>
+                <option value="利润 / 回款">利润 / 回款</option>
+                <option value="工期 / 回款">工期 / 回款</option>
+                <option value="工期 / 利润 / 回款">工期 / 利润 / 回款</option>
+              </select>
+            </label>
+            <label>合同金额
+              <input id="workbenchContractInput" type="number" min="0" step="0.01" />
+            </label>
+            <label>目标成本
+              <input id="workbenchTargetCostInput" type="number" min="0" step="0.01" />
+            </label>
+            <label>已发生成本
+              <input id="workbenchActualCostInput" type="number" min="0" step="0.01" />
+            </label>
+            <label>预计完工成本
+              <input id="workbenchForecastCostInput" type="number" min="0" step="0.01" />
+            </label>
+            <label>应回款
+              <input id="workbenchPlannedCollectionInput" type="number" min="0" step="0.01" />
+            </label>
+            <label>已回款
+              <input id="workbenchActualCollectionInput" type="number" min="0" step="0.01" />
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="submit">保存子项目状态</button>
+            <button id="workbenchAddRiskBtn" type="button" class="btn-secondary">新增该项目风险/问题</button>
+            <button id="workbenchAddDecisionBtn" type="button" class="btn-secondary">新增该项目决议</button>
+          </div>
+        </form>
+        <div class="split-grid">
+          <div class="panel">
+            <div class="section-body" style="padding-top: 0;">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>编号</th>
+                      <th>描述</th>
+                      <th>状态</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="workbenchRiskBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="section-body" style="padding-top: 0;">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>事项</th>
+                      <th>状态</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="workbenchDecisionBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-body">
+        <div class="filters" style="margin-bottom:8px;">
+          <button id="addRiskBtn" class="icon-btn" type="button" title="新增风险/问题" aria-label="新增风险/问题">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>编号</th>
+                <th>类型</th>
+                <th>描述</th>
+                <th>影响工地</th>
+                <th>严重度</th>
+                <th>责任人</th>
+                <th>截止时间</th>
+                <th>当前状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="riskTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-body">
+        <div class="filters" style="margin-bottom:8px;">
+          <button id="addDecisionBtn" class="icon-btn" type="button" title="新增决议" aria-label="新增决议">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>事项</th>
+                <th>决议</th>
+                <th>责任人</th>
+                <th>完成时间</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="decisionTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase.config.js"></script>
+  <script>
+    const localSeed = {
+      masterRows: [
+        {
+          name: "A 工地（总部园区）",
+          scope: "green",
+          schedule: "yellow",
+          cost: "green",
+          procurement: "yellow",
+          resource: "green",
+          risk: "yellow",
+          collection: "green",
+          redline: "工期",
+          owner: "李工",
+          contractAmount: 8200,
+          targetCost: 6500,
+          actualCost: 4100,
+          forecastCost: 6800,
+          plannedCollection: 7600,
+          actualCollection: 4200
+        },
+        {
+          name: "B 工地（商业中心）",
+          scope: "green",
+          schedule: "red",
+          cost: "yellow",
+          procurement: "red",
+          resource: "yellow",
+          risk: "red",
+          collection: "yellow",
+          redline: "工期 / 利润",
+          owner: "王工",
+          contractAmount: 9100,
+          targetCost: 7300,
+          actualCost: 5200,
+          forecastCost: 7900,
+          plannedCollection: 8400,
+          actualCollection: 3900
+        },
+        {
+          name: "C 工地（数据机房）",
+          scope: "yellow",
+          schedule: "green",
+          cost: "green",
+          procurement: "green",
+          resource: "yellow",
+          risk: "yellow",
+          collection: "green",
+          redline: "无",
+          owner: "陈工",
+          contractAmount: 6700,
+          targetCost: 5200,
+          actualCost: 2900,
+          forecastCost: 5100,
+          plannedCollection: 6200,
+          actualCollection: 3600
+        },
+        {
+          name: "D 工地（综合体东区）",
+          scope: "green",
+          schedule: "yellow",
+          cost: "red",
+          procurement: "yellow",
+          resource: "yellow",
+          risk: "yellow",
+          collection: "red",
+          redline: "利润 / 回款",
+          owner: "周工",
+          contractAmount: 10500,
+          targetCost: 8400,
+          actualCost: 6900,
+          forecastCost: 9200,
+          plannedCollection: 9600,
+          actualCollection: 3500
+        },
+        {
+          name: "E 工地（产业园二期）",
+          scope: "green",
+          schedule: "green",
+          cost: "green",
+          procurement: "green",
+          resource: "green",
+          risk: "green",
+          collection: "yellow",
+          redline: "回款",
+          owner: "赵工",
+          contractAmount: 7400,
+          targetCost: 5900,
+          actualCost: 3200,
+          forecastCost: 6050,
+          plannedCollection: 6900,
+          actualCollection: 4800
+        }
+      ],
+      riskIssues: [
+        {
+          id: "R-014",
+          type: "风险",
+          desc: "核心配电柜审批可能延后",
+          site: "B 工地",
+          severity: "高",
+          owner: "王工",
+          due: "2026-03-15",
+          status: "跟进中"
+        },
+        {
+          id: "I-027",
+          type: "问题",
+          desc: "消防材料未到场，安装停滞",
+          site: "B 工地",
+          severity: "高",
+          owner: "采购主管-何敏",
+          due: "2026-03-11",
+          status: "待升级"
+        },
+        {
+          id: "R-018",
+          type: "风险",
+          desc: "D 工地回款节点可能延后 20 天",
+          site: "D 工地",
+          severity: "高",
+          owner: "商务经理-孙伟",
+          due: "2026-03-18",
+          status: "预警"
+        },
+        {
+          id: "I-031",
+          type: "问题",
+          desc: "C 工地图纸二版接口冲突",
+          site: "C 工地",
+          severity: "中",
+          owner: "设计协调-杨帆",
+          due: "2026-03-14",
+          status: "处理中"
+        }
+      ],
+      decisions: [
+        {
+          item: "B 工地关键设备交付风险",
+          resolution: "将 2 台设备拆分空运，剩余海运；费用单独审批",
+          owner: "采购总监",
+          finish: "2026-03-12",
+          status: "执行中"
+        },
+        {
+          item: "D 工地回款保障",
+          resolution: "增加里程碑验收节点，商务周内完成补充协议",
+          owner: "商务经理",
+          finish: "2026-03-16",
+          status: "未开始"
+        },
+        {
+          item: "跨工地吊装设备冲突",
+          resolution: "优先保障 A 工地，E 工地改夜间窗口施工",
+          owner: "资源协调官",
+          finish: "2026-03-10",
+          status: "已完成"
+        }
+      ]
+    };
+
+    const textMap = {
+      green: "绿",
+      yellow: "黄",
+      red: "红"
+    };
+
+    let masterRows = clone(localSeed.masterRows);
+    let riskIssues = clone(localSeed.riskIssues);
+    let decisions = clone(localSeed.decisions);
+    let supabaseClient = null;
+    let masterEditMode = { type: null, key: null, draft: null };
+    let riskEditMode = { type: null, key: null, draft: null };
+    let decisionEditMode = { type: null, key: null, draft: null };
+    let activeProjectKey = null;
+
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function normalizeLight(value) {
+      return ["green", "yellow", "red"].includes(value) ? value : "green";
+    }
+
+    function shortDate(value) {
+      if (!value) return "";
+      return String(value).slice(0, 10);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function encodeKey(value) {
+      return encodeURIComponent(String(value ?? ""));
+    }
+
+    function decodeKey(value) {
+      return decodeURIComponent(value || "");
+    }
+
+    function setSourceStatus(text, tone) {
+      const el = document.getElementById("sourceStatus");
+      el.textContent = text;
+      el.className = "source-status";
+      if (tone) {
+        el.classList.add(tone);
+      }
+    }
+
+    function notifyCrudSynced(subject) {
+      if (supabaseClient) {
+        setSourceStatus(`数据源：Supabase 已同步（${subject}）`, "active");
+      } else {
+        setSourceStatus(`数据源：本地演示已更新（${subject}）`);
+      }
+    }
+
+    function statusBadge(code) {
+      const safeCode = normalizeLight(code);
+      return `<span class="status ${safeCode}">${textMap[safeCode]}</span>`;
+    }
+
+    function rowOverallStatus(row) {
+      const fields = [row.scope, row.schedule, row.cost, row.procurement, row.resource, row.risk, row.collection];
+      if (fields.includes("red")) return "red";
+      if (fields.includes("yellow")) return "yellow";
+      return "green";
+    }
+
+    function mapMasterToDb(row) {
+      return {
+        subproject: row.name,
+        scope_status: row.scope,
+        schedule_status: row.schedule,
+        cost_status: row.cost,
+        procurement_status: row.procurement,
+        resource_status: row.resource,
+        risk_status: row.risk,
+        collection_status: row.collection,
+        current_redline: row.redline,
+        owner: row.owner
+      };
+    }
+
+    function mapMasterFinanceToDb(row) {
+      return {
+        subproject: row.name,
+        contract_amount: Number(row.contractAmount || 0),
+        target_cost: Number(row.targetCost || 0),
+        actual_cost: Number(row.actualCost || 0),
+        forecast_cost: Number(row.forecastCost || 0),
+        planned_collection: Number(row.plannedCollection || 0),
+        actual_collection: Number(row.actualCollection || 0)
+      };
+    }
+
+    function mapRiskToDb(row) {
+      return {
+        issue_code: row.id,
+        issue_type: row.type,
+        description: row.desc,
+        impacted_site: row.site,
+        severity: row.severity,
+        owner: row.owner,
+        due_date: row.due || null,
+        current_status: row.status
+      };
+    }
+
+    function mapDecisionToDb(row) {
+      return {
+        item: row.item,
+        resolution: row.resolution,
+        owner: row.owner,
+        due_date: row.finish || null,
+        current_status: row.status
+      };
+    }
+
+    function toNumber(value) {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function money(v) {
+      return toNumber(v).toLocaleString("zh-CN");
+    }
+
+    function selectEditor(value, options, attrs) {
+      const opts = options
+        .map((x) => `<option value="${escapeHtml(x)}" ${x === value ? "selected" : ""}>${escapeHtml(x)}</option>`)
+        .join("");
+      return `<select ${attrs}>${opts}</select>`;
+    }
+
+    function inputEditor(value, attrs) {
+      return `<input value="${escapeHtml(value ?? "")}" ${attrs} />`;
+    }
+
+    function renderMasterTable(rows) {
+      const body = document.getElementById("masterTableBody");
+      const lightOptions = ["green", "yellow", "red"];
+      const redlineOptions = ["无", "工期", "利润", "回款", "工期 / 利润", "利润 / 回款", "工期 / 回款", "工期 / 利润 / 回款"];
+
+      const editRow = (draft, key, isCreate) => `
+        <tr>
+          <td>${inputEditor(draft.name, `data-table=\"master\" data-field=\"name\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${selectEditor(draft.scope, lightOptions, `data-table=\"master\" data-field=\"scope\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${selectEditor(draft.schedule, lightOptions, `data-table=\"master\" data-field=\"schedule\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${selectEditor(draft.cost, lightOptions, `data-table=\"master\" data-field=\"cost\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${selectEditor(draft.procurement, lightOptions, `data-table=\"master\" data-field=\"procurement\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${selectEditor(draft.resource, lightOptions, `data-table=\"master\" data-field=\"resource\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${selectEditor(draft.risk, lightOptions, `data-table=\"master\" data-field=\"risk\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${selectEditor(draft.collection, lightOptions, `data-table=\"master\" data-field=\"collection\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${selectEditor(draft.redline, redlineOptions, `data-table=\"master\" data-field=\"redline\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${inputEditor(draft.owner, `data-table=\"master\" data-field=\"owner\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>合同 ${money(draft.contractAmount)} / 回款 ${money(draft.actualCollection)}</td>
+          <td class="action-cell">
+            <button type="button" class="btn-small" data-action="save-master" data-key="${encodeKey(key)}">保存</button>
+            <button type="button" class="btn-small btn-secondary" data-action="cancel-master" data-key="${encodeKey(key)}">${isCreate ? "取消新增" : "取消"}</button>
+          </td>
+        </tr>
+      `;
+
+      const viewRows = rows
+        .map((r) => {
+          const isEditing = masterEditMode.type === "edit" && masterEditMode.key === r.name;
+          if (isEditing) {
+            return editRow(masterEditMode.draft, r.name, false);
+          }
+          return `
+            <tr>
+              <td>
+                <button type="button" class="project-link" data-action="open-workbench" data-key="${encodeKey(r.name)}">
+                  ${escapeHtml(r.name)}
+                </button>
+              </td>
+              <td>${statusBadge(r.scope)}</td>
+              <td>${statusBadge(r.schedule)}</td>
+              <td>${statusBadge(r.cost)}</td>
+              <td>${statusBadge(r.procurement)}</td>
+              <td>${statusBadge(r.resource)}</td>
+              <td>${statusBadge(r.risk)}</td>
+              <td>${statusBadge(r.collection)}</td>
+              <td>${escapeHtml(r.redline)}</td>
+              <td>${escapeHtml(r.owner)}</td>
+              <td>合同 ${money(r.contractAmount)} / 回款 ${money(r.actualCollection)}</td>
+              <td class="action-cell">
+                <button type="button" class="btn-small" data-action="edit-master" data-key="${encodeKey(r.name)}">编辑</button>
+                <button type="button" class="btn-small btn-danger" data-action="delete-master" data-key="${encodeKey(r.name)}">删除</button>
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      const createRow =
+        masterEditMode.type === "create"
+          ? editRow(masterEditMode.draft, "__new__", true)
+          : "";
+
+      body.innerHTML = createRow + viewRows;
+    }
+
+    function kpiIcon(icon) {
+      if (icon === "sites") {
+        return '<svg viewBox="0 0 24 24"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg>';
+      }
+      if (icon === "green") {
+        return '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m8 12 2.4 2.4L16 9"/></svg>';
+      }
+      if (icon === "yellow") {
+        return '<svg viewBox="0 0 24 24"><path d="M12 3 2.5 20h19z"/><path d="M12 9v4"/><path d="M12 16h.01"/></svg>';
+      }
+      if (icon === "red") {
+        return '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6"/><path d="m15 9-6 6"/></svg>';
+      }
+      if (icon === "clock") {
+        return '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg>';
+      }
+      return '<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
+    }
+
+    function renderKpis() {
+      const total = masterRows.length;
+      const overall = masterRows.map(rowOverallStatus);
+      const green = overall.filter((s) => s === "green").length;
+      const yellow = overall.filter((s) => s === "yellow").length;
+      const red = overall.filter((s) => s === "red").length;
+
+      const scheduleRedline = masterRows.filter((r) => r.redline.includes("工期")).length;
+      const profitRedline = masterRows.filter((r) => r.redline.includes("利润")).length;
+      const collectionRedline = masterRows.filter((r) => r.redline.includes("回款")).length;
+
+      const kpis = [
+        { label: "在管子项目", value: total, tone: "", icon: "sites" },
+        { label: "整体绿灯项目", value: green, tone: "good", icon: "green" },
+        { label: "整体黄灯项目", value: yellow, tone: "warn", icon: "yellow" },
+        { label: "整体红灯项目", value: red, tone: "bad", icon: "red" },
+        { label: "工期红线项目", value: scheduleRedline, tone: "bad", icon: "clock" },
+        { label: "利润 / 回款红线", value: `${profitRedline}/${collectionRedline}`, tone: "warn", icon: "bars" }
+      ];
+
+      document.getElementById("kpiGrid").innerHTML = kpis
+        .map(
+          (k) => `
+            <article class="kpi-chip ${k.tone}">
+              <span class="kpi-icon">${kpiIcon(k.icon)}</span>
+              <span class="label">${k.label}</span>
+              <strong class="value">${k.value}</strong>
+            </article>
+          `
+        )
+        .join("");
+    }
+
+    function renderRiskIssues() {
+      const body = document.getElementById("riskTableBody");
+      const typeOptions = ["风险", "问题"];
+      const severityOptions = ["高", "中", "低"];
+
+      const editRow = (draft, key, isCreate) => `
+        <tr>
+          <td>${inputEditor(draft.id, `data-table=\"risk\" data-field=\"id\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${selectEditor(draft.type, typeOptions, `data-table=\"risk\" data-field=\"type\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${inputEditor(draft.desc, `data-table=\"risk\" data-field=\"desc\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${inputEditor(draft.site, `data-table=\"risk\" data-field=\"site\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${selectEditor(draft.severity, severityOptions, `data-table=\"risk\" data-field=\"severity\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${inputEditor(draft.owner, `data-table=\"risk\" data-field=\"owner\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${inputEditor(draft.due, `type=\"date\" data-table=\"risk\" data-field=\"due\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${inputEditor(draft.status, `data-table=\"risk\" data-field=\"status\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td class="action-cell">
+            <button type="button" class="btn-small" data-action="save-risk" data-key="${encodeKey(key)}">保存</button>
+            <button type="button" class="btn-small btn-secondary" data-action="cancel-risk" data-key="${encodeKey(key)}">${isCreate ? "取消新增" : "取消"}</button>
+          </td>
+        </tr>
+      `;
+
+      const viewRows = riskIssues
+        .map((r) => {
+          const isEditing = riskEditMode.type === "edit" && riskEditMode.key === r.id;
+          if (isEditing) return editRow(riskEditMode.draft, r.id, false);
+          return `
+            <tr>
+              <td>${escapeHtml(r.id)}</td>
+              <td>${escapeHtml(r.type)}</td>
+              <td>${escapeHtml(r.desc)}</td>
+              <td>${escapeHtml(r.site)}</td>
+              <td>${escapeHtml(r.severity)}</td>
+              <td>${escapeHtml(r.owner)}</td>
+              <td>${escapeHtml(r.due)}</td>
+              <td>${escapeHtml(r.status)}</td>
+              <td class="action-cell">
+                <button type="button" class="btn-small" data-action="edit-risk" data-key="${encodeKey(r.id)}">编辑</button>
+                <button type="button" class="btn-small btn-danger" data-action="delete-risk" data-key="${encodeKey(r.id)}">删除</button>
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      const createRow =
+        riskEditMode.type === "create"
+          ? editRow(riskEditMode.draft, "__new__", true)
+          : "";
+
+      body.innerHTML = createRow + viewRows;
+    }
+
+    function getProjectCode(projectName) {
+      return String(projectName || "").split("（")[0].trim();
+    }
+
+    function matchesProject(projectName, siteName) {
+      const code = getProjectCode(projectName);
+      const site = String(siteName || "").trim();
+      return site && (projectName.includes(site) || site.includes(code) || code.includes(site));
+    }
+
+    function renderWorkbench() {
+      const panel = document.getElementById("projectWorkbench");
+      if (!activeProjectKey) {
+        panel.classList.add("hidden");
+        return;
+      }
+
+      const row = masterRows.find((x) => x.name === activeProjectKey);
+      if (!row) {
+        activeProjectKey = null;
+        panel.classList.add("hidden");
+        return;
+      }
+
+      panel.classList.remove("hidden");
+      document.getElementById("workbenchTitle").textContent = `子项目管理：${row.name}`;
+      document.getElementById("workbenchNameInput").value = row.name;
+      document.getElementById("workbenchOwnerInput").value = row.owner;
+      document.getElementById("workbenchScopeInput").value = row.scope;
+      document.getElementById("workbenchScheduleInput").value = row.schedule;
+      document.getElementById("workbenchCostInput").value = row.cost;
+      document.getElementById("workbenchProcurementInput").value = row.procurement;
+      document.getElementById("workbenchResourceInput").value = row.resource;
+      document.getElementById("workbenchRiskInput").value = row.risk;
+      document.getElementById("workbenchCollectionInput").value = row.collection;
+      document.getElementById("workbenchRedlineInput").value = row.redline || "无";
+      document.getElementById("workbenchContractInput").value = toNumber(row.contractAmount);
+      document.getElementById("workbenchTargetCostInput").value = toNumber(row.targetCost);
+      document.getElementById("workbenchActualCostInput").value = toNumber(row.actualCost);
+      document.getElementById("workbenchForecastCostInput").value = toNumber(row.forecastCost);
+      document.getElementById("workbenchPlannedCollectionInput").value = toNumber(row.plannedCollection);
+      document.getElementById("workbenchActualCollectionInput").value = toNumber(row.actualCollection);
+
+      const wbRiskBody = document.getElementById("workbenchRiskBody");
+      const wbDecisionBody = document.getElementById("workbenchDecisionBody");
+
+      const projectRisks = riskIssues.filter((x) => matchesProject(row.name, x.site));
+      wbRiskBody.innerHTML = projectRisks.length
+        ? projectRisks
+            .map(
+              (r) => `
+                <tr>
+                  <td>${escapeHtml(r.id)}</td>
+                  <td>${escapeHtml(r.desc)}</td>
+                  <td>${escapeHtml(r.status)}</td>
+                  <td class="action-cell">
+                    <button type="button" class="btn-small" data-action="wb-edit-risk" data-key="${encodeKey(r.id)}">编辑</button>
+                    <button type="button" class="btn-small btn-danger" data-action="wb-delete-risk" data-key="${encodeKey(r.id)}">删除</button>
+                  </td>
+                </tr>
+              `
+            )
+            .join("")
+        : '<tr><td colspan="4">暂无该项目风险/问题</td></tr>';
+
+      const projectDecisions = decisions.filter((x) => x.item.includes(getProjectCode(row.name)));
+      wbDecisionBody.innerHTML = projectDecisions.length
+        ? projectDecisions
+            .map(
+              (d) => `
+                <tr>
+                  <td>${escapeHtml(d.item)}</td>
+                  <td>${escapeHtml(d.status)}</td>
+                  <td class="action-cell">
+                    <button type="button" class="btn-small" data-action="wb-edit-decision" data-key="${encodeKey(d.item)}">编辑</button>
+                    <button type="button" class="btn-small btn-danger" data-action="wb-delete-decision" data-key="${encodeKey(d.item)}">删除</button>
+                  </td>
+                </tr>
+              `
+            )
+            .join("")
+        : '<tr><td colspan="3">暂无该项目决议</td></tr>';
+    }
+
+    function openWorkbench(key) {
+      activeProjectKey = key;
+      renderWorkbench();
+      document.getElementById("projectWorkbench").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function closeWorkbench() {
+      activeProjectKey = null;
+      renderWorkbench();
+    }
+
+    function renderDecisions() {
+      const body = document.getElementById("decisionTableBody");
+
+      const editRow = (draft, key, isCreate) => `
+        <tr>
+          <td>${inputEditor(draft.item, `data-table=\"decision\" data-field=\"item\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${inputEditor(draft.resolution, `data-table=\"decision\" data-field=\"resolution\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${inputEditor(draft.owner, `data-table=\"decision\" data-field=\"owner\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${inputEditor(draft.finish, `type=\"date\" data-table=\"decision\" data-field=\"finish\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td>${inputEditor(draft.status, `data-table=\"decision\" data-field=\"status\" data-key=\"${encodeKey(key)}\"`)}</td>
+          <td class="action-cell">
+            <button type="button" class="btn-small" data-action="save-decision" data-key="${encodeKey(key)}">保存</button>
+            <button type="button" class="btn-small btn-secondary" data-action="cancel-decision" data-key="${encodeKey(key)}">${isCreate ? "取消新增" : "取消"}</button>
+          </td>
+        </tr>
+      `;
+
+      const viewRows = decisions
+        .map((d) => {
+          const isEditing = decisionEditMode.type === "edit" && decisionEditMode.key === d.item;
+          if (isEditing) return editRow(decisionEditMode.draft, d.item, false);
+          return `
+            <tr>
+              <td>${escapeHtml(d.item)}</td>
+              <td>${escapeHtml(d.resolution)}</td>
+              <td>${escapeHtml(d.owner)}</td>
+              <td>${escapeHtml(d.finish)}</td>
+              <td>${escapeHtml(d.status)}</td>
+              <td class="action-cell">
+                <button type="button" class="btn-small" data-action="edit-decision" data-key="${encodeKey(d.item)}">编辑</button>
+                <button type="button" class="btn-small btn-danger" data-action="delete-decision" data-key="${encodeKey(d.item)}">删除</button>
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      const createRow =
+        decisionEditMode.type === "create"
+          ? editRow(decisionEditMode.draft, "__new__", true)
+          : "";
+
+      body.innerHTML = createRow + viewRows;
+    }
+
+    function applyFilters() {
+      const statusFilter = document.getElementById("statusFilter").value;
+      const redlineFilter = document.getElementById("redlineFilter").value;
+
+      const filtered = masterRows.filter((row) => {
+        const overall = rowOverallStatus(row);
+        const passStatus = statusFilter === "all" ? true : overall === statusFilter;
+        const passRedline = redlineFilter === "all" ? true : row.redline.includes(redlineFilter);
+        return passStatus && passRedline;
+      });
+
+      renderMasterTable(filtered);
+    }
+
+    function renderAll() {
+      renderKpis();
+      applyFilters();
+      renderRiskIssues();
+      renderDecisions();
+      renderWorkbench();
+    }
+
+    function getSupabaseConfig() {
+      const config = window.SUPABASE_CONFIG || {};
+      return {
+        url: config.url || "",
+        anonKey: config.anonKey || ""
+      };
+    }
+
+    function initSupabaseClient() {
+      const sdkReady = Boolean(window.supabase && window.supabase.createClient);
+      if (!sdkReady) {
+        setSourceStatus("数据源：本地演示（supabase-js 未加载）", "error");
+        return;
+      }
+
+      const { url, anonKey } = getSupabaseConfig();
+      if (!url || !anonKey || url.includes("YOUR_") || anonKey.includes("YOUR_")) {
+        setSourceStatus("数据源：本地演示（待配置 Supabase）");
+        return;
+      }
+
+      supabaseClient = window.supabase.createClient(url, anonKey, {
+        auth: { persistSession: false }
+      });
+      setSourceStatus("数据源：Supabase 已配置，可拉取", "active");
+    }
+
+    function getWorkbenchFormData() {
+      return {
+        name: document.getElementById("workbenchNameInput").value,
+        owner: document.getElementById("workbenchOwnerInput").value.trim(),
+        scope: document.getElementById("workbenchScopeInput").value,
+        schedule: document.getElementById("workbenchScheduleInput").value,
+        cost: document.getElementById("workbenchCostInput").value,
+        procurement: document.getElementById("workbenchProcurementInput").value,
+        resource: document.getElementById("workbenchResourceInput").value,
+        risk: document.getElementById("workbenchRiskInput").value,
+        collection: document.getElementById("workbenchCollectionInput").value,
+        redline: document.getElementById("workbenchRedlineInput").value,
+        contractAmount: toNumber(document.getElementById("workbenchContractInput").value),
+        targetCost: toNumber(document.getElementById("workbenchTargetCostInput").value),
+        actualCost: toNumber(document.getElementById("workbenchActualCostInput").value),
+        forecastCost: toNumber(document.getElementById("workbenchForecastCostInput").value),
+        plannedCollection: toNumber(document.getElementById("workbenchPlannedCollectionInput").value),
+        actualCollection: toNumber(document.getElementById("workbenchActualCollectionInput").value)
+      };
+    }
+
+    function createMasterDraft(seed = {}) {
+      return {
+        name: "",
+        owner: "",
+        scope: "green",
+        schedule: "green",
+        cost: "green",
+        procurement: "green",
+        resource: "green",
+        risk: "green",
+        collection: "green",
+        redline: "无",
+        contractAmount: 0,
+        targetCost: 0,
+        actualCost: 0,
+        forecastCost: 0,
+        plannedCollection: 0,
+        actualCollection: 0,
+        ...seed
+      };
+    }
+
+    function createRiskDraft(seed = {}) {
+      return {
+        id: "",
+        type: "风险",
+        desc: "",
+        site: "",
+        severity: "高",
+        owner: "",
+        due: "",
+        status: "",
+        ...seed
+      };
+    }
+
+    function createDecisionDraft(seed = {}) {
+      return {
+        item: "",
+        resolution: "",
+        owner: "",
+        finish: "",
+        status: "",
+        ...seed
+      };
+    }
+
+    async function upsertMasterCloud(row, oldKey) {
+      if (!supabaseClient) return;
+      if (oldKey && oldKey !== row.name) {
+        const oldDelete = await supabaseClient.from("pmo_master_control").delete().eq("subproject", oldKey);
+        if (oldDelete.error) throw oldDelete.error;
+      }
+      const write = await supabaseClient.from("pmo_master_control").upsert(mapMasterToDb(row), {
+        onConflict: "subproject"
+      });
+      if (write.error) throw write.error;
+
+      const financeWrite = await supabaseClient.from("pmo_project_finance").upsert(mapMasterFinanceToDb(row), {
+        onConflict: "subproject"
+      });
+      if (financeWrite.error && !financeWrite.error.message.includes("relation") && !financeWrite.error.message.includes("column")) {
+        throw financeWrite.error;
+      }
+    }
+
+    async function deleteMasterCloud(key) {
+      if (!supabaseClient) return;
+      const del = await supabaseClient.from("pmo_master_control").delete().eq("subproject", key);
+      if (del.error) throw del.error;
+      await supabaseClient.from("pmo_project_finance").delete().eq("subproject", key);
+    }
+
+    async function upsertRiskCloud(row, oldKey) {
+      if (!supabaseClient) return;
+      if (oldKey && oldKey !== row.id) {
+        const oldDelete = await supabaseClient.from("pmo_risk_issue_log").delete().eq("issue_code", oldKey);
+        if (oldDelete.error) throw oldDelete.error;
+      }
+      const write = await supabaseClient.from("pmo_risk_issue_log").upsert(mapRiskToDb(row), {
+        onConflict: "issue_code"
+      });
+      if (write.error) throw write.error;
+    }
+
+    async function deleteRiskCloud(key) {
+      if (!supabaseClient) return;
+      const del = await supabaseClient.from("pmo_risk_issue_log").delete().eq("issue_code", key);
+      if (del.error) throw del.error;
+    }
+
+    async function upsertDecisionCloud(row, oldKey) {
+      if (!supabaseClient) return;
+      if (oldKey && oldKey !== row.item) {
+        const oldDelete = await supabaseClient.from("pmo_meeting_decisions").delete().eq("item", oldKey);
+        if (oldDelete.error) throw oldDelete.error;
+      }
+      const write = await supabaseClient.from("pmo_meeting_decisions").upsert(mapDecisionToDb(row), {
+        onConflict: "item"
+      });
+      if (write.error) throw write.error;
+    }
+
+    async function deleteDecisionCloud(key) {
+      if (!supabaseClient) return;
+      const del = await supabaseClient.from("pmo_meeting_decisions").delete().eq("item", key);
+      if (del.error) throw del.error;
+    }
+
+    function upsertLocalMaster(row, oldKey) {
+      const target = oldKey || row.name;
+      const idx = masterRows.findIndex((x) => x.name === target);
+      if (idx >= 0) {
+        masterRows[idx] = row;
+      } else {
+        masterRows.unshift(row);
+      }
+    }
+
+    function upsertLocalRisk(row, oldKey) {
+      const target = oldKey || row.id;
+      const idx = riskIssues.findIndex((x) => x.id === target);
+      if (idx >= 0) {
+        riskIssues[idx] = row;
+      } else {
+        riskIssues.unshift(row);
+      }
+    }
+
+    function upsertLocalDecision(row, oldKey) {
+      const target = oldKey || row.item;
+      const idx = decisions.findIndex((x) => x.item === target);
+      if (idx >= 0) {
+        decisions[idx] = row;
+      } else {
+        decisions.unshift(row);
+      }
+    }
+
+    async function handleWorkbenchSubmit(event) {
+      event.preventDefault();
+      const row = getWorkbenchFormData();
+      if (!row.name || !row.owner) {
+        alert("子项目和负责人不能为空。");
+        return;
+      }
+      try {
+        await upsertMasterCloud(row, row.name);
+        upsertLocalMaster(row, row.name);
+        renderAll();
+        notifyCrudSynced("子项目状态已更新");
+      } catch (error) {
+        console.error(error);
+        setSourceStatus("数据源：子项目状态保存失败", "error");
+        alert(`保存失败：${error.message || "未知错误"}`);
+      }
+    }
+
+    function quickAddRiskForActiveProject() {
+      const row = masterRows.find((x) => x.name === activeProjectKey);
+      if (!row) return;
+      riskEditMode = { type: "create", key: "__new__", draft: createRiskDraft({ site: getProjectCode(row.name) }) };
+      renderAll();
+      document.getElementById("riskTableBody").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function quickAddDecisionForActiveProject() {
+      const row = masterRows.find((x) => x.name === activeProjectKey);
+      if (!row) return;
+      decisionEditMode = {
+        type: "create",
+        key: "__new__",
+        draft: createDecisionDraft({ item: `${getProjectCode(row.name)}-` })
+      };
+      renderAll();
+      document.getElementById("decisionTableBody").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function deleteMasterRecord(key) {
+      if (!confirm(`确认删除子项目「${key}」吗？`)) return;
+      try {
+        await deleteMasterCloud(key);
+        masterRows = masterRows.filter((x) => x.name !== key);
+        if (masterEditMode.type === "edit" && masterEditMode.key === key) {
+          masterEditMode = { type: null, key: null, draft: null };
+        }
+        if (activeProjectKey === key) closeWorkbench();
+        renderAll();
+        notifyCrudSynced("总控表已删除");
+      } catch (error) {
+        console.error(error);
+        setSourceStatus("数据源：总控表删除失败", "error");
+        alert(`删除失败：${error.message || "未知错误"}`);
+      }
+    }
+
+    async function deleteRiskRecord(key) {
+      if (!confirm(`确认删除风险/问题「${key}」吗？`)) return;
+      try {
+        await deleteRiskCloud(key);
+        riskIssues = riskIssues.filter((x) => x.id !== key);
+        if (riskEditMode.type === "edit" && riskEditMode.key === key) {
+          riskEditMode = { type: null, key: null, draft: null };
+        }
+        renderAll();
+        notifyCrudSynced("风险问题表已删除");
+      } catch (error) {
+        console.error(error);
+        setSourceStatus("数据源：风险问题表删除失败", "error");
+        alert(`删除失败：${error.message || "未知错误"}`);
+      }
+    }
+
+    async function deleteDecisionRecord(key) {
+      if (!confirm(`确认删除决议「${key}」吗？`)) return;
+      try {
+        await deleteDecisionCloud(key);
+        decisions = decisions.filter((x) => x.item !== key);
+        if (decisionEditMode.type === "edit" && decisionEditMode.key === key) {
+          decisionEditMode = { type: null, key: null, draft: null };
+        }
+        renderAll();
+        notifyCrudSynced("会议决议表已删除");
+      } catch (error) {
+        console.error(error);
+        setSourceStatus("数据源：会议决议删除失败", "error");
+        alert(`删除失败：${error.message || "未知错误"}`);
+      }
+    }
+
+    function startMasterEdit(key) {
+      const row = masterRows.find((x) => x.name === key);
+      if (!row) return;
+      masterEditMode = { type: "edit", key, draft: createMasterDraft(row) };
+      renderAll();
+    }
+
+    function startRiskEdit(key) {
+      const row = riskIssues.find((x) => x.id === key);
+      if (!row) return;
+      riskEditMode = { type: "edit", key, draft: createRiskDraft(row) };
+      renderAll();
+    }
+
+    function startDecisionEdit(key) {
+      const row = decisions.find((x) => x.item === key);
+      if (!row) return;
+      decisionEditMode = { type: "edit", key, draft: createDecisionDraft(row) };
+      renderAll();
+    }
+
+    function patchEditorDraft(modeRef, key, field, value) {
+      if (!modeRef.draft) return;
+      const matchEdit = modeRef.type === "edit" && modeRef.key === key;
+      const matchCreate = modeRef.type === "create" && key === "__new__";
+      if (matchEdit || matchCreate) {
+        modeRef.draft[field] = value;
+      }
+    }
+
+    function onTableEditorInput(event) {
+      const target = event.target.closest("[data-table][data-field][data-key]");
+      if (!target) return;
+      const key = decodeKey(target.dataset.key);
+      const field = target.dataset.field;
+      const value = target.value;
+      if (target.dataset.table === "master") {
+        patchEditorDraft(masterEditMode, key, field, value);
+      }
+      if (target.dataset.table === "risk") {
+        patchEditorDraft(riskEditMode, key, field, value);
+      }
+      if (target.dataset.table === "decision") {
+        patchEditorDraft(decisionEditMode, key, field, value);
+      }
+    }
+
+    async function saveMasterInline(key) {
+      const draft = createMasterDraft(masterEditMode.draft || {});
+      draft.name = draft.name.trim();
+      draft.owner = draft.owner.trim();
+      if (!draft.name || !draft.owner) {
+        alert("子项目和负责人不能为空。");
+        return;
+      }
+      const oldKey = masterEditMode.type === "edit" ? masterEditMode.key : null;
+      if (oldKey !== draft.name && masterRows.some((x) => x.name === draft.name)) {
+        alert("子项目名称已存在，请修改后再保存。");
+        return;
+      }
+      try {
+        await upsertMasterCloud(draft, oldKey);
+        upsertLocalMaster(draft, oldKey);
+        if (activeProjectKey === oldKey) activeProjectKey = draft.name;
+        masterEditMode = { type: null, key: null, draft: null };
+        renderAll();
+        notifyCrudSynced("总控表已保存");
+      } catch (error) {
+        console.error(error);
+        setSourceStatus("数据源：总控表保存失败", "error");
+        alert(`保存失败：${error.message || "未知错误"}`);
+      }
+    }
+
+    async function saveRiskInline() {
+      const draft = createRiskDraft(riskEditMode.draft || {});
+      draft.id = draft.id.trim();
+      draft.desc = draft.desc.trim();
+      draft.site = draft.site.trim();
+      draft.owner = draft.owner.trim();
+      draft.status = draft.status.trim();
+      if (!draft.id || !draft.desc || !draft.site || !draft.owner || !draft.status) {
+        alert("请完整填写编号、描述、影响工地、责任人和状态。");
+        return;
+      }
+      const oldKey = riskEditMode.type === "edit" ? riskEditMode.key : null;
+      if (oldKey !== draft.id && riskIssues.some((x) => x.id === draft.id)) {
+        alert("编号已存在，请修改后再保存。");
+        return;
+      }
+      try {
+        await upsertRiskCloud(draft, oldKey);
+        upsertLocalRisk(draft, oldKey);
+        riskEditMode = { type: null, key: null, draft: null };
+        renderAll();
+        notifyCrudSynced("风险问题表已保存");
+      } catch (error) {
+        console.error(error);
+        setSourceStatus("数据源：风险问题表保存失败", "error");
+        alert(`保存失败：${error.message || "未知错误"}`);
+      }
+    }
+
+    async function saveDecisionInline() {
+      const draft = createDecisionDraft(decisionEditMode.draft || {});
+      draft.item = draft.item.trim();
+      draft.resolution = draft.resolution.trim();
+      draft.owner = draft.owner.trim();
+      draft.status = draft.status.trim();
+      if (!draft.item || !draft.resolution || !draft.owner || !draft.status) {
+        alert("请完整填写事项、决议、责任人和状态。");
+        return;
+      }
+      const oldKey = decisionEditMode.type === "edit" ? decisionEditMode.key : null;
+      if (oldKey !== draft.item && decisions.some((x) => x.item === draft.item)) {
+        alert("事项已存在，请修改后再保存。");
+        return;
+      }
+      try {
+        await upsertDecisionCloud(draft, oldKey);
+        upsertLocalDecision(draft, oldKey);
+        decisionEditMode = { type: null, key: null, draft: null };
+        renderAll();
+        notifyCrudSynced("会议决议表已保存");
+      } catch (error) {
+        console.error(error);
+        setSourceStatus("数据源：会议决议保存失败", "error");
+        alert(`保存失败：${error.message || "未知错误"}`);
+      }
+    }
+
+    function onMasterTableAction(event) {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      const key = decodeKey(button.dataset.key);
+      if (button.dataset.action === "open-workbench") {
+        openWorkbench(key);
+      }
+      if (button.dataset.action === "save-master") {
+        saveMasterInline(key);
+      }
+      if (button.dataset.action === "cancel-master") {
+        masterEditMode = { type: null, key: null, draft: null };
+        renderAll();
+      }
+      if (button.dataset.action === "edit-master") {
+        startMasterEdit(key);
+      }
+      if (button.dataset.action === "delete-master") {
+        deleteMasterRecord(key);
+      }
+    }
+
+    function onRiskTableAction(event) {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      const key = decodeKey(button.dataset.key);
+      if (button.dataset.action === "save-risk") {
+        saveRiskInline();
+      }
+      if (button.dataset.action === "cancel-risk") {
+        riskEditMode = { type: null, key: null, draft: null };
+        renderAll();
+      }
+      if (button.dataset.action === "edit-risk") {
+        startRiskEdit(key);
+      }
+      if (button.dataset.action === "delete-risk") {
+        deleteRiskRecord(key);
+      }
+    }
+
+    function onDecisionTableAction(event) {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      const key = decodeKey(button.dataset.key);
+      if (button.dataset.action === "save-decision") {
+        saveDecisionInline();
+      }
+      if (button.dataset.action === "cancel-decision") {
+        decisionEditMode = { type: null, key: null, draft: null };
+        renderAll();
+      }
+      if (button.dataset.action === "edit-decision") {
+        startDecisionEdit(key);
+      }
+      if (button.dataset.action === "delete-decision") {
+        deleteDecisionRecord(key);
+      }
+    }
+
+    function onWorkbenchTableAction(event) {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      const key = decodeKey(button.dataset.key);
+      if (button.dataset.action === "wb-edit-risk") {
+        startRiskEdit(key);
+        document.getElementById("riskTableBody").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      if (button.dataset.action === "wb-delete-risk") {
+        deleteRiskRecord(key);
+      }
+      if (button.dataset.action === "wb-edit-decision") {
+        startDecisionEdit(key);
+        document.getElementById("decisionTableBody").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      if (button.dataset.action === "wb-delete-decision") {
+        deleteDecisionRecord(key);
+      }
+    }
+
+    async function loadCloudData() {
+      if (!supabaseClient) {
+        setSourceStatus("数据源：未配置 Supabase，无法拉取", "error");
+        return;
+      }
+
+      setSourceStatus("数据源：Supabase 拉取中...", "active");
+
+      try {
+        const [masterRes, riskRes, decisionsRes, financeRes] = await Promise.all([
+          supabaseClient.from("pmo_master_control").select("*").order("subproject"),
+          supabaseClient.from("pmo_risk_issue_log").select("*").order("issue_code"),
+          supabaseClient.from("pmo_meeting_decisions").select("*").order("item"),
+          supabaseClient.from("pmo_project_finance").select("*").order("subproject")
+        ]);
+
+        const financeError =
+          financeRes.error &&
+          !financeRes.error.message.includes("relation") &&
+          !financeRes.error.message.includes("column")
+            ? financeRes.error
+            : null;
+
+        const errors = [masterRes.error, riskRes.error, decisionsRes.error, financeError].filter(Boolean);
+        if (errors.length) {
+          throw new Error(errors.map((e) => e.message).join(" | "));
+        }
+
+        const hasAnyRemoteData = [masterRes.data, riskRes.data, decisionsRes.data].some(
+          (rows) => Array.isArray(rows) && rows.length > 0
+        );
+
+        const financeMap = new Map();
+        if (Array.isArray(financeRes.data)) {
+          financeRes.data.forEach((row) => {
+            financeMap.set(row.subproject, {
+              contractAmount: toNumber(row.contract_amount),
+              targetCost: toNumber(row.target_cost),
+              actualCost: toNumber(row.actual_cost),
+              forecastCost: toNumber(row.forecast_cost),
+              plannedCollection: toNumber(row.planned_collection),
+              actualCollection: toNumber(row.actual_collection)
+            });
+          });
+        }
+
+        if (Array.isArray(masterRes.data) && masterRes.data.length > 0) {
+          masterRows = masterRes.data.map((row) => ({
+            name: row.subproject || "",
+            scope: normalizeLight(row.scope_status),
+            schedule: normalizeLight(row.schedule_status),
+            cost: normalizeLight(row.cost_status),
+            procurement: normalizeLight(row.procurement_status),
+            resource: normalizeLight(row.resource_status),
+            risk: normalizeLight(row.risk_status),
+            collection: normalizeLight(row.collection_status),
+            redline: row.current_redline || "无",
+            owner: row.owner || "",
+            ...financeMap.get(row.subproject)
+          }));
+        }
+
+        if (Array.isArray(riskRes.data) && riskRes.data.length > 0) {
+          riskIssues = riskRes.data.map((row) => ({
+            id: row.issue_code || "",
+            type: row.issue_type || "",
+            desc: row.description || "",
+            site: row.impacted_site || "",
+            severity: row.severity || "",
+            owner: row.owner || "",
+            due: shortDate(row.due_date),
+            status: row.current_status || ""
+          }));
+        }
+
+        if (Array.isArray(decisionsRes.data) && decisionsRes.data.length > 0) {
+          decisions = decisionsRes.data.map((row) => ({
+            item: row.item || "",
+            resolution: row.resolution || "",
+            owner: row.owner || "",
+            finish: shortDate(row.due_date),
+            status: row.current_status || ""
+          }));
+        }
+
+        masterEditMode = { type: null, key: null, draft: null };
+        riskEditMode = { type: null, key: null, draft: null };
+        decisionEditMode = { type: null, key: null, draft: null };
+        renderAll();
+
+        if (!hasAnyRemoteData) {
+          setSourceStatus("数据源：Supabase 已连接（表为空，仍显示本地示例）", "active");
+          return;
+        }
+
+        setSourceStatus(
+          `数据源：Supabase 在线（最近拉取 ${new Date().toLocaleString("zh-CN", { hour12: false })}）`,
+          "active"
+        );
+      } catch (error) {
+        console.error(error);
+        setSourceStatus("数据源：拉取失败，已回退本地演示", "error");
+      }
+    }
+
+    async function seedCloudData() {
+      if (!supabaseClient) {
+        setSourceStatus("数据源：未配置 Supabase，无法初始化", "error");
+        return;
+      }
+
+      setSourceStatus("数据源：正在写入 Supabase...", "active");
+
+      try {
+        const masterPayload = localSeed.masterRows.map(mapMasterToDb);
+        const financePayload = localSeed.masterRows.map(mapMasterFinanceToDb);
+        const riskPayload = localSeed.riskIssues.map(mapRiskToDb);
+        const decisionsPayload = localSeed.decisions.map(mapDecisionToDb);
+
+        const [masterWrite, riskWrite, decisionsWrite, financeWrite] = await Promise.all([
+          supabaseClient.from("pmo_master_control").upsert(masterPayload, { onConflict: "subproject" }),
+          supabaseClient.from("pmo_risk_issue_log").upsert(riskPayload, { onConflict: "issue_code" }),
+          supabaseClient.from("pmo_meeting_decisions").upsert(decisionsPayload, { onConflict: "item" }),
+          supabaseClient.from("pmo_project_finance").upsert(financePayload, { onConflict: "subproject" })
+        ]);
+
+        const financeError =
+          financeWrite.error &&
+          !financeWrite.error.message.includes("relation") &&
+          !financeWrite.error.message.includes("column")
+            ? financeWrite.error
+            : null;
+        const errors = [masterWrite.error, riskWrite.error, decisionsWrite.error, financeError].filter(Boolean);
+        if (errors.length) {
+          throw new Error(errors.map((e) => e.message).join(" | "));
+        }
+
+        setSourceStatus("数据源：示例数据已写入 Supabase，可点击拉取验证", "active");
+      } catch (error) {
+        console.error(error);
+        setSourceStatus("数据源：初始化失败，请检查表结构/RLS 策略", "error");
+      }
+    }
+
+    function bindEvents() {
+      document.getElementById("statusFilter").addEventListener("change", applyFilters);
+      document.getElementById("redlineFilter").addEventListener("change", applyFilters);
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        document.getElementById("statusFilter").value = "all";
+        document.getElementById("redlineFilter").value = "all";
+        applyFilters();
+      });
+      document.getElementById("loadCloudBtn").addEventListener("click", loadCloudData);
+      document.getElementById("seedCloudBtn").addEventListener("click", seedCloudData);
+      document.getElementById("addMasterBtn").addEventListener("click", () => {
+        masterEditMode = { type: "create", key: "__new__", draft: createMasterDraft() };
+        renderAll();
+      });
+      document.getElementById("addRiskBtn").addEventListener("click", () => {
+        riskEditMode = { type: "create", key: "__new__", draft: createRiskDraft() };
+        renderAll();
+      });
+      document.getElementById("addDecisionBtn").addEventListener("click", () => {
+        decisionEditMode = { type: "create", key: "__new__", draft: createDecisionDraft() };
+        renderAll();
+      });
+
+      document.getElementById("masterTableBody").addEventListener("click", onMasterTableAction);
+      document.getElementById("masterTableBody").addEventListener("input", onTableEditorInput);
+      document.getElementById("masterTableBody").addEventListener("change", onTableEditorInput);
+      document.getElementById("workbenchForm").addEventListener("submit", handleWorkbenchSubmit);
+      document.getElementById("closeWorkbenchBtn").addEventListener("click", closeWorkbench);
+      document.getElementById("workbenchAddRiskBtn").addEventListener("click", quickAddRiskForActiveProject);
+      document.getElementById("workbenchAddDecisionBtn").addEventListener("click", quickAddDecisionForActiveProject);
+      document.getElementById("workbenchRiskBody").addEventListener("click", onWorkbenchTableAction);
+      document.getElementById("workbenchDecisionBody").addEventListener("click", onWorkbenchTableAction);
+
+      document.getElementById("riskTableBody").addEventListener("click", onRiskTableAction);
+      document.getElementById("riskTableBody").addEventListener("input", onTableEditorInput);
+      document.getElementById("riskTableBody").addEventListener("change", onTableEditorInput);
+
+      document.getElementById("decisionTableBody").addEventListener("click", onDecisionTableAction);
+      document.getElementById("decisionTableBody").addEventListener("input", onTableEditorInput);
+      document.getElementById("decisionTableBody").addEventListener("change", onTableEditorInput);
+    }
+
+    function init() {
+      masterEditMode = { type: null, key: null, draft: null };
+      riskEditMode = { type: null, key: null, draft: null };
+      decisionEditMode = { type: null, key: null, draft: null };
+      renderAll();
+      closeWorkbench();
+      bindEvents();
+      initSupabaseClient();
+    }
+
+    init();
+  </script>
+</body>
+</html>
