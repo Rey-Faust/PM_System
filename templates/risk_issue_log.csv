@@ -1,0 +1,3 @@
+id,type,subproject,description,severity,owner,due_date,status,mitigation_or_action,risk_status,last_updated
+R-001,Risk,DEMO-SITE-A,Owner drawing approval may slip,High,Owner_A,2026-03-14,Open,pre-align approval window with consultant,Yellow,2026-03-09
+I-001,Issue,DEMO-SITE-A,Temporary access blocked by third party,High,Owner_A,2026-03-12,Open,escalate via interface register,Red,2026-03-09

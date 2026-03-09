@@ -1,0 +1,4 @@
+decision_level,can_decide_items,cannot_decide_items,escalation_trigger,sla_hours,decision_owner,report_to,last_updated
+Site,minor material substitution and same-day sequence adjustment,major design change or total milestone impact,any impact on master milestone or budget redline,4,Site_Manager,Subproject_Owner,2026-03-09
+Subproject,short-term resource reallocation and subcontractor site arrangement,total budget overrun commitment or client claim settlement,critical procurement delay over 3 days or cross-site resource conflict,12,Subproject_Owner,PMO_Lead,2026-03-09
+PMO,cross-project priority and executive escalation,contract scope reset without executive approval,any schedule/profit/collection redline or major client complaint,24,PMO_Lead,Steering_Committee,2026-03-09

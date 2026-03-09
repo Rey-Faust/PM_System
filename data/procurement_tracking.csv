@@ -1,0 +1,2 @@
+subproject,material_or_equipment,po_date,required_on_site_date,current_status,is_critical_path,delay_days,impact_description,procurement_status,responsible_party,last_updated
+DEMO-SITE-A,HVAC unit,2026-03-05,2026-03-28,ordered,Yes,0,no current impact,Green,Procurement_A,2026-03-09

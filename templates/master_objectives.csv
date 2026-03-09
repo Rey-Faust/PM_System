@@ -1,0 +1,2 @@
+master_project,baseline_date,total_schedule_target,total_budget_target,total_quality_target,total_collection_target,total_client_target,pmo_lead,objective_status,last_updated
+MASTER-PROGRAM-2026,2026-03-09,All subprojects handover by 2026-12-31,120000000,Zero critical quality defects at handover,DSO<=45 and overdue<30d,NPS>=8.5 and no major client complaint,PMO_Lead,Green,2026-03-09
