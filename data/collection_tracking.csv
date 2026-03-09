@@ -1,2 +1,0 @@
-subproject,invoice_id,invoice_date,amount_due,amount_received,due_date,days_overdue,collection_status,owner,last_updated
-DEMO-SITE-A,INV-001,2026-02-20,1200000,600000,2026-03-05,4,Yellow,Finance_A,2026-03-09
